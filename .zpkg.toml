@@ -1,0 +1,17 @@
+[package]
+org = "opto-sync"
+name = "opto-sync-cli"
+version = "0.1.0"
+description = "Read-only validation, replay, and redacted diagnostics for Opto Sync"
+license = "MIT"
+
+[package.repository]
+vcs = "git"
+url = "https://github.com/opto-sync/opto-sync-cli"
+
+[targets.rust]
+dir = "."
+adapter = "rust"
+
+[publish]
+enabled = false

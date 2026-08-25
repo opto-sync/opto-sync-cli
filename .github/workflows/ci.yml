@@ -1,0 +1,43 @@
+name: cli
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: opto-sync-cli-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  read-only-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@2eae45db285e407f22119950686d47e1101e071b
+        with:
+          toolchain: "1.88.0"
+          components: rustfmt, clippy
+      - run: cargo fmt --all -- --check
+      - run: cargo test --all-targets --locked
+      - run: cargo clippy --all-targets --locked -- -D warnings
+      - name: Replay the committed deterministic traces
+        run: cargo run --locked -- replay --input fixtures/traces.v1.json
+      - name: Reject mutation authority and conflict markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git grep -nE '^(<<<<<<<|=======|>>>>>>>)'; then
+            exit 1
+          fi
+          if git grep -nE 'std::process::Command|fs::write|TcpStream|reqwest|async_nats|sqlx|rusqlite' -- src; then
+            exit 1
+          fi
+          grep -F 'enabled = false' .zpkg.toml >/dev/null

@@ -1,0 +1,27 @@
+[package]
+name = "opto-sync-cli"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+license = "MIT"
+description = "Read-only validation, replay, and redacted diagnostics for Opto Sync"
+repository = "https://github.com/opto-sync/opto-sync-cli"
+
+[[bin]]
+name = "opto-sync"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+opto-sync-interfaces = { git = "https://github.com/opto-sync/opto-sync-interfaces.git", rev = "b92b3a2eb43eeb183144521a188ae465a013951e" }
+opto-sync-lib = { git = "https://github.com/opto-sync/opto-sync-lib.git", rev = "f2ea017328aff58401d38a6d36480c45b39d3c15" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+toml = "0.8"
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints.rust]
+unsafe_code = "forbid"

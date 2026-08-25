@@ -1,0 +1,53 @@
+{
+  "schema": "opto-sync.optimism-traces.v1",
+  "traces": [
+    {
+      "name": "remote-confirmed-success",
+      "strategy": "remote_confirmed",
+      "events": ["local_accepted", "remote_applied"],
+      "states": ["proposed", "in_flight", "confirmed"]
+    },
+    {
+      "name": "background-offline-reconnect",
+      "strategy": "background_durable",
+      "events": [
+        "local_accepted",
+        "connectivity_restored",
+        "dispatch_started",
+        "connectivity_lost",
+        "connectivity_restored",
+        "dispatch_started",
+        "remote_applied"
+      ],
+      "states": [
+        "proposed",
+        "durably_queued",
+        "durably_queued",
+        "in_flight",
+        "durably_queued",
+        "durably_queued",
+        "in_flight",
+        "confirmed"
+      ]
+    },
+    {
+      "name": "retry-then-confirm",
+      "strategy": "remote_confirmed",
+      "events": [
+        "local_accepted",
+        "retryable_failure",
+        "retry_elapsed",
+        "remote_applied",
+        "remote_applied"
+      ],
+      "states": [
+        "proposed",
+        "in_flight",
+        "backoff",
+        "in_flight",
+        "confirmed",
+        "confirmed"
+      ]
+    }
+  ]
+}
