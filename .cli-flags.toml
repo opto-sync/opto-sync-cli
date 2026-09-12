@@ -1,0 +1,70 @@
+[help]
+url = "https://github.com/opto-sync/opto-sync-cli#usage"
+columns = ["options", "env", "type", "default", "description"]
+
+[env]
+load = false
+
+[parse]
+command_env = "OPTO_SYNC_CLI_COMMAND"
+positionals_env = "OPTO_SYNC_CLI_POSITIONALS"
+unknown_options_env = "OPTO_SYNC_CLI_UNKNOWN_OPTIONS"
+errors_env = "OPTO_SYNC_CLI_PARSE_ERRORS"
+allow_unknown = false
+
+[flags.root]
+env = "OPTO_SYNC_CLI_ROOT"
+aliases = ["root"]
+type = "string"
+default = "."
+help = "Canonical trust root for every input path."
+
+[flags.max-input-bytes]
+env = "OPTO_SYNC_CLI_MAX_INPUT_BYTES"
+aliases = ["max-input-bytes"]
+type = "integer"
+default = 1048576
+help = "Maximum bytes read from any one input file; accepted range is 64 through 8388608."
+
+[flags.max-output-bytes]
+env = "OPTO_SYNC_CLI_MAX_OUTPUT_BYTES"
+aliases = ["max-output-bytes"]
+type = "integer"
+default = 32768
+help = "Maximum bytes emitted in the versioned JSON response; accepted range is 512 through 65536."
+
+[commands.validate]
+help = "Validate a bounded local artifact without changing it."
+env = "OPTO_SYNC_CLI_COMMAND_VALIDATE"
+
+[commands.validate.flags.kind]
+env = "OPTO_SYNC_CLI_VALIDATE_KIND"
+aliases = ["kind"]
+type = "string"
+help = "Artifact kind: json, traces, or cargo-lock."
+
+[commands.validate.flags.input]
+env = "OPTO_SYNC_CLI_VALIDATE_INPUT"
+aliases = ["input"]
+type = "string"
+help = "Input path below the configured trust root."
+
+[commands.replay]
+help = "Deterministically replay bounded policy traces."
+env = "OPTO_SYNC_CLI_COMMAND_REPLAY"
+
+[commands.replay.flags.input]
+env = "OPTO_SYNC_CLI_REPLAY_INPUT"
+aliases = ["input"]
+type = "string"
+help = "Trace fixture path below the configured trust root."
+
+[commands.inspect]
+help = "Report redacted JSON shape metrics without echoing keys or values."
+env = "OPTO_SYNC_CLI_COMMAND_INSPECT"
+
+[commands.inspect.flags.input]
+env = "OPTO_SYNC_CLI_INSPECT_INPUT"
+aliases = ["input"]
+type = "string"
+help = "JSON input path below the configured trust root."
