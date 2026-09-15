@@ -1,0 +1,42 @@
+name: refresh shared CLI Cargo lock
+
+on:
+  push:
+    branches:
+      - feat/shared-cli-runtime-v1
+    paths:
+      - Cargo.toml
+      - .github/workflows/refresh-shared-cli-lock.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: feat/shared-cli-runtime-v1
+          fetch-depth: 1
+      - name: Install repository Rust toolchain
+        run: |
+          rustup toolchain install 1.88.0 --profile minimal
+          rustup default 1.88.0
+      - name: Refresh lock through Cargo
+        run: cargo check --all-targets
+      - name: Commit generated lock and remove temporary workflow
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/refresh-shared-cli-lock.yml
+          git add Cargo.lock
+          if git diff --cached --quiet; then
+            echo "No lock refresh required"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh Cargo lock for shared CLI runtime"
+          git push origin HEAD:feat/shared-cli-runtime-v1
