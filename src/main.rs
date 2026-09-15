@@ -4,11 +4,11 @@ use std::io;
 use std::process::ExitCode;
 
 use clap::Parser;
-use opto_sync_cli::{Cli, execute, render_failure};
+use opto_sync_cli::{execute, render_failure, Cli};
 use ores_clis_core::{
-    CliPolicy, ColorRole, EmitDisposition, EnvironmentHints, LogLevel, OutputMode,
-    ProtocolEmitter, RuntimePolicy, StreamRole, TerminalState, paint, parse_shared_argv,
-    top_level_io,
+    paint, parse_shared_argv, top_level_io, CliPolicy, ColorRole, EmitDisposition,
+    EnvironmentHints, LogLevel, OutputMode, ProtocolEmitter, RuntimePolicy, StreamRole,
+    TerminalState,
 };
 
 fn emit_error(runtime: RuntimePolicy, message: impl std::fmt::Display) {
@@ -25,7 +25,9 @@ fn main() -> ExitCode {
     let terminals = TerminalState::detect();
     let environment = EnvironmentHints::detect();
     let mut process_args = std::env::args();
-    let program = process_args.next().unwrap_or_else(|| "opto-sync".to_owned());
+    let program = process_args
+        .next()
+        .unwrap_or_else(|| "opto-sync".to_owned());
     let shared = match parse_shared_argv(process_args) {
         Ok(shared) => shared,
         Err(error) => {
@@ -68,7 +70,8 @@ fn main() -> ExitCode {
             if runtime.allows_log(LogLevel::Error) {
                 let stderr = io::stderr();
                 let mut emitter = ProtocolEmitter::new(stderr.lock(), StreamRole::Diagnostics);
-                let _ = top_level_io(emitter.emit_diagnostic_line(&render_failure("request", &error)));
+                let _ =
+                    top_level_io(emitter.emit_diagnostic_line(&render_failure("request", &error)));
             }
             ExitCode::from(u8::try_from(error.exit_code()).unwrap_or(70))
         }
