@@ -59,6 +59,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b588b76d00fde79687d7646a9b5bdf3cc0f655e0bbd080335a95d7e96f3587da"
 
 [[package]]
+name = "cc"
+version = "1.4.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3eb0f42d6c360dc3f8a821f6bf2fdea7f72bfd36b3076eb0e6d1e9e0752fff4"
+dependencies = [
+ "find-msvc-tools",
+ "shlex",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -133,6 +143,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "da7c62ceae207dd37ea5b845da6a0696c799f85e97da1ab5b7910be3c1c80223"
 
 [[package]]
+name = "find-msvc-tools"
+version = "0.1.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e0f1c7c3a72c66fd80abe965175f7523475c0489a87d3ff9d6e8c87d87a9d2d"
+
+[[package]]
+name = "flags2env"
+version = "0.1.0"
+source = "git+https://github.com/flags-2-env/flags-2-env.git?rev=3414281ed8d7339d5bfabf951048bff31aa3349e#3414281ed8d7339d5bfabf951048bff31aa3349e"
+dependencies = [
+ "cc",
+ "libloading",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -184,6 +211,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3eaf3ede3fee6db1a4c2ee091bf8a8b4dccdc6d17f656fb07896ee72867612f2"
 
 [[package]]
+name = "libloading"
+version = "0.8.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d7c4b02199fee7c5d21a5ae7d8cfa79a6ef5bb2fc834d6e9058e89c825efdc55"
+dependencies = [
+ "cfg-if",
+ "windows-link",
+]
+
+[[package]]
 name = "linux-raw-sys"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -212,8 +249,10 @@ name = "opto-sync-cli"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "flags2env",
  "opto-sync-interfaces",
  "opto-sync-lib",
+ "ores-clis-core",
  "serde",
  "serde_json",
  "tempfile",
@@ -238,6 +277,11 @@ dependencies = [
  "opto-sync-interfaces",
  "serde",
 ]
+
+[[package]]
+name = "ores-clis-core"
+version = "0.1.0"
+source = "git+https://github.com/ORESoftware/ores-clis-core.git?rev=2ea696bd8dd066483d29c37af9e34036cbae82f9#2ea696bd8dd066483d29c37af9e34036cbae82f9"
 
 [[package]]
 name = "proc-macro2"
@@ -327,6 +371,12 @@ checksum = "bf41e0cfaf7226dca15e8197172c295a782857fcb97fad1808a166870dee75a3"
 dependencies = [
  "serde",
 ]
+
+[[package]]
+name = "shlex"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
 
 [[package]]
 name = "strsim"
