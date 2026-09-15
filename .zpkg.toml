@@ -9,6 +9,9 @@ license = "MIT"
 vcs = "git"
 url = "https://github.com/opto-sync/opto-sync-cli"
 
+[dependencies]
+"oresoftware/ores-clis-core" = "^0.1.0"
+
 [targets.rust]
 dir = "."
 adapter = "rust"
