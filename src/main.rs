@@ -6,32 +6,49 @@ use std::process::ExitCode;
 use clap::Parser;
 use opto_sync_cli::{Cli, execute, render_failure};
 use ores_clis_core::{
-    CliPolicy, EmitDisposition, EnvironmentHints, LogLevel, OutputMode, ProtocolEmitter,
-    StreamRole, TerminalState, parse_shared_argv, top_level_io,
+    CliPolicy, ColorRole, EmitDisposition, EnvironmentHints, LogLevel, OutputMode,
+    ProtocolEmitter, RuntimePolicy, StreamRole, TerminalState, paint, parse_shared_argv,
+    top_level_io,
 };
 
+fn emit_error(runtime: RuntimePolicy, message: impl std::fmt::Display) {
+    if !runtime.allows_log(LogLevel::Error) {
+        return;
+    }
+    let stderr = io::stderr();
+    let mut emitter = ProtocolEmitter::new(stderr.lock(), StreamRole::Diagnostics);
+    let line = paint(runtime.color_stderr(), ColorRole::Error, message);
+    let _ = top_level_io(emitter.emit_diagnostic_line(&line));
+}
+
 fn main() -> ExitCode {
+    let terminals = TerminalState::detect();
+    let environment = EnvironmentHints::detect();
     let mut process_args = std::env::args();
     let program = process_args.next().unwrap_or_else(|| "opto-sync".to_owned());
     let shared = match parse_shared_argv(process_args) {
         Ok(shared) => shared,
         Err(error) => {
-            eprintln!("opto-sync: {error}");
+            let runtime = CliPolicy::default().resolve(terminals, environment);
+            emit_error(runtime, format!("opto-sync: {error}"));
             return ExitCode::from(2);
         }
     };
-
-    if shared.output_was_explicit() && matches!(shared.policy.output, OutputMode::Human) {
-        eprintln!("opto-sync: human output is unsupported; stdout is the versioned JSON protocol");
-        return ExitCode::from(2);
-    }
 
     let runtime = CliPolicy {
         output: OutputMode::Json,
         color: shared.policy.color,
         log_level: shared.policy.log_level,
     }
-    .resolve(TerminalState::detect(), EnvironmentHints::detect());
+    .resolve(terminals, environment);
+
+    if shared.output_was_explicit() && matches!(shared.policy.output, OutputMode::Human) {
+        emit_error(
+            runtime,
+            "opto-sync: human output is unsupported; stdout is the versioned JSON protocol",
+        );
+        return ExitCode::from(2);
+    }
 
     let mut argv = Vec::with_capacity(shared.passthrough.len() + 1);
     argv.push(program);
