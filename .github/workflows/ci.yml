@@ -16,7 +16,9 @@ concurrency:
 jobs:
   read-only-contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    env:
+      ZED_CLI_REV: dbd63f1d87d12c2e8cb9a8c600fae9b79f94e559
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -25,6 +27,24 @@ jobs:
         with:
           toolchain: "1.88.0"
           components: rustfmt, clippy
+      - name: Build audited Zed CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo install \
+            --locked \
+            --git https://github.com/zed-pkg/zed-cli.git \
+            --rev "$ZED_CLI_REV" \
+            --root "$RUNNER_TEMP/zed-cli" \
+            --bin zed
+          echo "$RUNNER_TEMP/zed-cli/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/zed-cli/bin/zed" --version
+      - name: Install frozen Zed dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          zed validate --require-lock
+          zed install --frozen --install-mode copy
       - run: cargo fmt --all -- --check
       - run: cargo test --all-targets --locked
       - run: cargo clippy --all-targets --locked -- -D warnings
