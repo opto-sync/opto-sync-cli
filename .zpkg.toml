@@ -2,6 +2,7 @@
 org = "opto-sync"
 name = "opto-sync-cli"
 version = "0.1.0"
+kind = "cli"
 description = "Read-only validation, replay, and redacted diagnostics for Opto Sync"
 license = "MIT"
 
