@@ -33,6 +33,14 @@ fn main() -> ExitCode {
         );
     }
 
+    if std::env::args()
+        .nth(1)
+        .is_some_and(|argument| matches!(argument.as_str(), "--version" | "-V"))
+    {
+        println!("opto-sync {}", env!("CARGO_PKG_VERSION"));
+        return ExitCode::SUCCESS;
+    }
+
     let terminals = TerminalState::detect();
     let environment = EnvironmentHints::detect();
     let mut process_args = std::env::args();
