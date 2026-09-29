@@ -22,6 +22,25 @@ fn emit_error(runtime: RuntimePolicy, message: impl std::fmt::Display) {
 }
 
 fn main() -> ExitCode {
+    if ores_clis_core::self_update::self_update_requested() {
+        ores_clis_core::self_update::run_self_update_cli(
+            ores_clis_core::self_update::SelfUpdateConfig::new(
+                "opto-sync",
+                "opto-sync-cli",
+                "opto-sync",
+                env!("CARGO_PKG_VERSION"),
+            ),
+        );
+    }
+
+    if std::env::args()
+        .nth(1)
+        .is_some_and(|argument| matches!(argument.as_str(), "--version" | "-V"))
+    {
+        println!("opto-sync {}", env!("CARGO_PKG_VERSION"));
+        return ExitCode::SUCCESS;
+    }
+
     let terminals = TerminalState::detect();
     let environment = EnvironmentHints::detect();
     let mut process_args = std::env::args();
