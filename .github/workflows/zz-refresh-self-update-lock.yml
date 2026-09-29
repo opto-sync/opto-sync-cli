@@ -1,0 +1,36 @@
+name: temporary self-update lock refresh
+
+on:
+  push:
+    branches:
+      - feat/self-update-command
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-lock:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: feat/self-update-command
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@2eae45db285e407f22119950686d47e1101e071b
+        with:
+          toolchain: 1.88.0
+      - name: Refresh lock for reviewed shared CLI runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -q '7c9acb2325796ecfcbbc8f1c90c6fec3ab0a5377' Cargo.lock; then
+            echo 'Cargo.lock already contains reviewed ores-clis-core revision'
+            exit 0
+          fi
+          cargo update -p ores-clis-core
+          git config user.name 'ORESoftware'
+          git config user.email 'alexander.d.mills@gmail.com'
+          git add Cargo.lock
+          git commit -m 'build: refresh self-update lockfile'
+          git push origin HEAD:feat/self-update-command
