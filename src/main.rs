@@ -22,16 +22,9 @@ fn emit_error(runtime: RuntimePolicy, message: impl std::fmt::Display) {
 }
 
 fn main() -> ExitCode {
-    if ores_clis_core::self_update::self_update_requested() {
-        ores_clis_core::self_update::run_self_update_cli(
-            ores_clis_core::self_update::SelfUpdateConfig::new(
-                "opto-sync",
-                "opto-sync-cli",
-                "opto-sync",
-                env!("CARGO_PKG_VERSION"),
-            ),
-        );
-    }
+    // This executable is deliberately read-only. The shared self-update
+    // command downloads and replaces binaries, so it must not be registered.
+    // Clap rejects unsupported `self-update` invocations with usage code 2.
 
     if std::env::args()
         .nth(1)
