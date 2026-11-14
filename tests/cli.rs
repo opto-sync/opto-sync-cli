@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::{fs, path::Path, process::Command as ProcessCommand};
 
 use clap::Parser;
 use opto_sync_cli::{execute, Cli, CliError, Command, ValidationKind, OUTPUT_SCHEMA};
@@ -167,4 +167,17 @@ fn enforces_output_bounds_and_stable_usage_code() {
 
     let usage = Cli::try_parse_from(["opto-sync"]).expect_err("subcommand is required");
     assert_eq!(usage.exit_code(), 2);
+}
+
+#[test]
+fn read_only_executable_rejects_self_update_before_any_network_or_disk_mutation() {
+    // --help would return success in the shared mutating updater, but the
+    // read-only CLI must refuse to register the command at all.
+    let output = ProcessCommand::new(env!("CARGO_BIN_EXE_opto-sync"))
+        .args(["self-update", "--help"])
+        .output()
+        .expect("spawn the built CLI");
+
+    assert_eq!(output.status.code(), Some(2));
+    assert!(output.stdout.is_empty());
 }
