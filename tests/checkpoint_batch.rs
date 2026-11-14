@@ -1,7 +1,7 @@
 use std::fs;
 
 use clap::Parser;
-use opto_sync_cli::{execute, Cli, CliError, Command, ValidationKind};
+use opto_sync_cli::{execute, Cli, CliError};
 use tempfile::TempDir;
 
 fn run(source: &str) -> Result<String, CliError> {
