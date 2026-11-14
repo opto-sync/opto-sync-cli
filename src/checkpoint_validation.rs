@@ -1,11 +1,11 @@
 //! Read-only, fail-closed validation for batches of monotonic checkpoints.
-use opto_sync_lib::{CheckpointDecision, CheckpointLedger};
+use opto_sync_lib::{CheckpointDecision, CheckpointLedger, MAX_BATCH_OBSERVATIONS};
 use serde::Deserialize;
 use serde_json::{json, Value};
 
 use crate::CliError;
 
-const MAX_OPERATIONS: usize = 1_024;
+const MAX_OPERATIONS: usize = MAX_BATCH_OBSERVATIONS;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -36,24 +36,23 @@ pub(crate) fn validate(bytes: &[u8]) -> Result<Value, CliError> {
         return Err(CliError::Validation);
     }
 
-    // This CLI deliberately keeps its existing immutable policy dependency.
-    // That pinned revision exposes an in-place observe method; mutate only
-    // this throwaway local ledger and never persist an intermediate result.
-    let mut ledger =
-        CheckpointLedger::new(&batch.initial_checkpoint, batch.maximum_seen_operations)
-            .map_err(|_| CliError::Validation)?;
+    // The pinned policy exposes pure checkpoint transitions. Build a new
+    // temporary ledger for every admitted observation; publish only once
+    // the entire batch succeeds and never persist any intermediate snapshot.
+    let ledger = CheckpointLedger::new(&batch.initial_checkpoint, batch.maximum_seen_operations)
+        .map_err(|_| CliError::Validation)?;
 
-    let (advanced, duplicates) = batch.operations.iter().try_fold(
-        (0_usize, 0_usize),
-        |(advanced, duplicates), operation| {
-            let decision = ledger
+    let (ledger, advanced, duplicates) = batch.operations.iter().try_fold(
+        (ledger, 0_usize, 0_usize),
+        |(ledger, advanced, duplicates), operation| {
+            let (next, decision) = ledger
                 .observe(&operation.operation_id, &operation.checkpoint)
                 .map_err(|_| CliError::Validation)?;
-            let counts = match decision {
+            let (advanced, duplicates) = match decision {
                 CheckpointDecision::Advanced => (advanced + 1, duplicates),
                 CheckpointDecision::Duplicate => (advanced, duplicates + 1),
             };
-            Ok::<_, CliError>(counts)
+            Ok::<_, CliError>((next, advanced, duplicates))
         },
     )?;
 

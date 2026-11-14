@@ -8,7 +8,7 @@ and diagnostics.
 Implemented read-only CLI; package publication and every production mutation
 remain disabled. The binary pins `opto-sync-interfaces` at
 `b92b3a2eb43eeb183144521a188ae465a013951e` and `opto-sync-lib` at
-`f2ea017328aff58401d38a6d36480c45b39d3c15`. It installs no merge engine and
+`90083002b4bc11a141f240634f3139f9b460e6fc`. It installs no merge engine and
 has no network, database, subprocess, or filesystem-write capability.
 
 ## Commands and output contract
@@ -30,7 +30,8 @@ file, and is bounded by `--max-input-bytes` before parsing.
 `checkpoint-batch` accepts `opto-sync.checkpoint-batch.v1` with
 `initialCheckpoint`, `maximumSeenOperations`, and an ordered `operations`
 array containing `operationId` and decimal-string `checkpoint`. Admission is
-all-or-nothing, capped at 1,024 observations, and returns redacted counts and
+all-or-nothing, capped at the policy library's shared 1,024-observation limit
+(including duplicate IDs), and returns redacted counts and
 a final checkpoint without echoing operation IDs.
 
 Stable process exit codes are `0` for success, `2` for command-line usage, `3`
@@ -77,6 +78,9 @@ the same immutable interfaces and policy revisions.
 - Adversarial tests cover path traversal, malformed and oversized input,
   command-shaped paths, secret-shaped data, trace divergence, output bounds,
   and duplicate engines.
+- The shared `self-update` command is deliberately **unsupported**: the
+  read-only CLI must never download or replace its own executable. The binary
+  regression test and CI source gate reject accidental reintroduction.
 - CI rejects mutation/network authority in `src`, runs strict Rust gates, and
   proves publication remains disabled in `.zpkg.toml`.
 

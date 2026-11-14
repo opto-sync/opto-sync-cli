@@ -26,6 +26,10 @@ fn validates_ordered_batch_with_redacted_output() {
     let output = run(r#"{"schema":"opto-sync.checkpoint-batch.v1","initialCheckpoint":"0","maximumSeenOperations":3,"operations":[{"operationId":"sensitive-operation-a","checkpoint":"1"},{"operationId":"sensitive-operation-a","checkpoint":"1"},{"operationId":"sensitive-operation-b","checkpoint":"2"}]}"#).unwrap();
     let json: serde_json::Value = serde_json::from_str(&output).unwrap();
     assert_eq!(json["ok"], true);
+    assert_eq!(
+        json["policyRevision"],
+        "90083002b4bc11a141f240634f3139f9b460e6fc"
+    );
     assert_eq!(json["data"]["kind"], "checkpoint_batch");
     assert_eq!(json["data"]["advancedCount"], 2);
     assert_eq!(json["data"]["duplicateCount"], 1);

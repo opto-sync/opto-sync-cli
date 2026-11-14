@@ -16,7 +16,7 @@ use thiserror::Error;
 
 pub const OUTPUT_SCHEMA: &str = "opto-sync.cli.output.v1";
 pub const INTERFACES_REVISION: &str = "b92b3a2eb43eeb183144521a188ae465a013951e";
-pub const POLICY_REVISION: &str = "f2ea017328aff58401d38a6d36480c45b39d3c15";
+pub const POLICY_REVISION: &str = "90083002b4bc11a141f240634f3139f9b460e6fc";
 
 const MAX_JSON_NODES: usize = 100_000;
 const MAX_TRACE_COUNT: usize = 128;

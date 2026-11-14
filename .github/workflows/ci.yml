@@ -37,7 +37,7 @@ jobs:
           if git grep -nE '^(<<<<<<<|=======|>>>>>>>)'; then
             exit 1
           fi
-          if git grep -nE 'std::process::Command|fs::write|TcpStream|reqwest|async_nats|sqlx|rusqlite' -- src; then
+          if git grep -nE 'std::process::Command|fs::write|TcpStream|reqwest|async_nats|sqlx|rusqlite|self_update' -- src; then
             exit 1
           fi
           grep -F 'enabled = false' .zpkg.toml >/dev/null
