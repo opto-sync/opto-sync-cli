@@ -36,11 +36,8 @@ pub(crate) fn validate(bytes: &[u8]) -> Result<Value, CliError> {
         return Err(CliError::Validation);
     }
 
-    let initial = CheckpointLedger::new(
-        &batch.initial_checkpoint,
-        batch.maximum_seen_operations,
-    )
-    .map_err(|_| CliError::Validation)?;
+    let initial = CheckpointLedger::new(&batch.initial_checkpoint, batch.maximum_seen_operations)
+        .map_err(|_| CliError::Validation)?;
 
     let (final_ledger, advanced, duplicates) = batch.operations.iter().try_fold(
         (initial, 0_usize, 0_usize),
