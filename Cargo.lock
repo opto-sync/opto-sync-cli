@@ -615,8 +615,8 @@ dependencies = [
 
 [[package]]
 name = "opto-sync-lib"
-version = "0.1.0"
-source = "git+https://github.com/opto-sync/opto-sync-lib.git?rev=f2ea017328aff58401d38a6d36480c45b39d3c15#f2ea017328aff58401d38a6d36480c45b39d3c15"
+version = "0.2.0"
+source = "git+https://github.com/opto-sync/opto-sync-lib.git?rev=90083002b4bc11a141f240634f3139f9b460e6fc#90083002b4bc11a141f240634f3139f9b460e6fc"
 dependencies = [
  "opto-sync-interfaces",
  "serde",
