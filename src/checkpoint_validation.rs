@@ -36,20 +36,23 @@ pub(crate) fn validate(bytes: &[u8]) -> Result<Value, CliError> {
         return Err(CliError::Validation);
     }
 
-    let initial = CheckpointLedger::new(&batch.initial_checkpoint, batch.maximum_seen_operations)
+    // This CLI deliberately keeps its existing immutable policy dependency.
+    // That pinned revision exposes an in-place observe method; mutate only
+    // this throwaway local ledger and never persist an intermediate result.
+    let mut ledger = CheckpointLedger::new(&batch.initial_checkpoint, batch.maximum_seen_operations)
         .map_err(|_| CliError::Validation)?;
 
-    let (final_ledger, advanced, duplicates) = batch.operations.iter().try_fold(
-        (initial, 0_usize, 0_usize),
-        |(ledger, advanced, duplicates), operation| {
-            let (next, decision) = ledger
+    let (advanced, duplicates) = batch.operations.iter().try_fold(
+        (0_usize, 0_usize),
+        |(advanced, duplicates), operation| {
+            let decision = ledger
                 .observe(&operation.operation_id, &operation.checkpoint)
                 .map_err(|_| CliError::Validation)?;
             let counts = match decision {
                 CheckpointDecision::Advanced => (advanced + 1, duplicates),
                 CheckpointDecision::Duplicate => (advanced, duplicates + 1),
             };
-            Ok::<_, CliError>((next, counts.0, counts.1))
+            Ok::<_, CliError>(counts)
         },
     )?;
 
@@ -59,7 +62,7 @@ pub(crate) fn validate(bytes: &[u8]) -> Result<Value, CliError> {
         "operationCount": batch.operations.len(),
         "advancedCount": advanced,
         "duplicateCount": duplicates,
-        "finalCheckpoint": final_ledger.checkpoint(),
+        "finalCheckpoint": ledger.checkpoint(),
         "redacted": true
     }))
 }
