@@ -16,6 +16,7 @@ has no network, database, subprocess, or filesystem-write capability.
 ```sh
 cargo run --locked -- validate --kind json --input manifest.json
 cargo run --locked -- validate --kind cargo-lock --input Cargo.lock
+cargo run --locked -- validate --kind checkpoint-batch --input batch.json
 cargo run --locked -- replay --input fixtures/traces.v1.json
 cargo run --locked -- inspect --input local-diagnostic.json
 ```
@@ -25,6 +26,12 @@ interfaces and policy revisions, and is bounded by `--max-output-bytes`.
 `inspect` returns counts and structural metrics only: it never emits input
 keys or values. Every input is canonicalized beneath `--root`, must be a regular
 file, and is bounded by `--max-input-bytes` before parsing.
+
+`checkpoint-batch` accepts `opto-sync.checkpoint-batch.v1` with
+`initialCheckpoint`, `maximumSeenOperations`, and an ordered `operations`
+array containing `operationId` and decimal-string `checkpoint`. Admission is
+all-or-nothing, capped at 1,024 observations, and returns redacted counts and
+a final checkpoint without echoing operation IDs.
 
 Stable process exit codes are `0` for success, `2` for command-line usage, `3`
 for input-policy rejection, `4` for invalid artifacts, `5` for trace divergence,
