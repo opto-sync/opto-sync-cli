@@ -39,8 +39,9 @@ pub(crate) fn validate(bytes: &[u8]) -> Result<Value, CliError> {
     // This CLI deliberately keeps its existing immutable policy dependency.
     // That pinned revision exposes an in-place observe method; mutate only
     // this throwaway local ledger and never persist an intermediate result.
-    let mut ledger = CheckpointLedger::new(&batch.initial_checkpoint, batch.maximum_seen_operations)
-        .map_err(|_| CliError::Validation)?;
+    let mut ledger =
+        CheckpointLedger::new(&batch.initial_checkpoint, batch.maximum_seen_operations)
+            .map_err(|_| CliError::Validation)?;
 
     let (advanced, duplicates) = batch.operations.iter().try_fold(
         (0_usize, 0_usize),
