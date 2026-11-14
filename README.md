@@ -78,6 +78,9 @@ the same immutable interfaces and policy revisions.
 - Adversarial tests cover path traversal, malformed and oversized input,
   command-shaped paths, secret-shaped data, trace divergence, output bounds,
   and duplicate engines.
+- The shared `self-update` command is deliberately **unsupported**: the
+  read-only CLI must never download or replace its own executable. The binary
+  regression test and CI source gate reject accidental reintroduction.
 - CI rejects mutation/network authority in `src`, runs strict Rust gates, and
   proves publication remains disabled in `.zpkg.toml`.
 
