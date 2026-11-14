@@ -1,5 +1,7 @@
 #![forbid(unsafe_code)]
 
+mod checkpoint_validation;
+
 use std::{
     collections::HashSet,
     fs,
@@ -83,6 +85,7 @@ pub enum ValidationKind {
     Json,
     Traces,
     CargoLock,
+    CheckpointBatch,
 }
 
 #[derive(Debug, Error)]
@@ -238,6 +241,7 @@ pub fn execute(cli: &Cli) -> Result<String, CliError> {
             }
             ValidationKind::Traces => replay_bytes(&policy.read(input)?)?,
             ValidationKind::CargoLock => validate_cargo_lock(&policy.read(input)?)?,
+            ValidationKind::CheckpointBatch => checkpoint_validation::validate(&policy.read(input)?)?,
         },
         Command::Replay { input } => replay_bytes(&policy.read(input)?)?,
         Command::Inspect { input } => {
