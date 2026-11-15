@@ -8,8 +8,14 @@ fn run(source: &str) -> Result<String, CliError> {
     let dir = TempDir::new().expect("temp root");
     fs::write(dir.path().join("candidate.json"), source).expect("fixture");
     let cli = Cli::try_parse_from([
-        "opto-sync", "--root", dir.path().to_str().expect("UTF-8 path"),
-        "validate", "--kind", "atto-cursor-model", "--input", "candidate.json",
+        "opto-sync",
+        "--root",
+        dir.path().to_str().expect("UTF-8 path"),
+        "validate",
+        "--kind",
+        "atto-cursor-model",
+        "--input",
+        "candidate.json",
     ])
     .expect("CLI parsing");
     execute(&cli)
@@ -36,13 +42,22 @@ fn refuses_forged_outcomes_and_vacuous_traces() {
         serde_json::from_str(include_str!("../fixtures/atto-cursor-model.v1.json")).unwrap();
     let mut forged = base.clone();
     forged["cases"][1]["expectedAdmit"] = serde_json::json!(true);
-    assert!(matches!(run(&forged.to_string()), Err(CliError::Validation)));
+    assert!(matches!(
+        run(&forged.to_string()),
+        Err(CliError::Validation)
+    ));
     let mut vacuous = base.clone();
     vacuous["cases"] = serde_json::json!([base["cases"][0]]);
-    assert!(matches!(run(&vacuous.to_string()), Err(CliError::Validation)));
+    assert!(matches!(
+        run(&vacuous.to_string()),
+        Err(CliError::Validation)
+    ));
     let mut unknown = base.clone();
     unknown["cases"][0]["tenantSecret"] = serde_json::json!("sensitive");
-    assert!(matches!(run(&unknown.to_string()), Err(CliError::Validation)));
+    assert!(matches!(
+        run(&unknown.to_string()),
+        Err(CliError::Validation)
+    ));
 }
 
 #[test]
