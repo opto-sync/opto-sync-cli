@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod atto_cursor_validation;
 mod checkpoint_validation;
 
 use std::{
@@ -86,6 +87,7 @@ pub enum ValidationKind {
     Traces,
     CargoLock,
     CheckpointBatch,
+    AttoCursorModel,
 }
 
 #[derive(Debug, Error)]
@@ -243,6 +245,9 @@ pub fn execute(cli: &Cli) -> Result<String, CliError> {
             ValidationKind::CargoLock => validate_cargo_lock(&policy.read(input)?)?,
             ValidationKind::CheckpointBatch => {
                 checkpoint_validation::validate(&policy.read(input)?)?
+            }
+            ValidationKind::AttoCursorModel => {
+                atto_cursor_validation::validate(&policy.read(input)?)?
             }
         },
         Command::Replay { input } => replay_bytes(&policy.read(input)?)?,

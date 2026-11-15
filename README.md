@@ -92,3 +92,7 @@ cargo test --all-targets --locked
 cargo clippy --all-targets --locked -- -D warnings
 cargo run --locked -- replay --input fixtures/traces.v1.json
 ```
+
+## Experimental AttoLang cursor policy model
+
+`cargo run --locked -- validate --kind atto-cursor-model --input fixtures/atto-cursor-model.v1.json` checks a bounded hypothetical `.atto` scoped-cursor admission trace. It requires successful and adversarial cases (stale generation, wrong scope, and cursor replay), rejects noncanonical signed-i64 input, and emits only redacted counts. The `scopeVerified` / `authoritative` flags are untrusted fixture assertions, **not** authentication or durability proof. `guestExecuted=false` and `authorizationEvidence=false` are always returned. This CLI does not compile AttoLang, contact a server, or authorize a mutation.
