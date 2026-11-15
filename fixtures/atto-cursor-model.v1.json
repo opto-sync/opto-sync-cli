@@ -1,0 +1,55 @@
+{
+  "schema": "opto-sync.atto-cursor-model.v1",
+  "cases": [
+    {
+      "activeGeneration": "2",
+      "observedGeneration": "2",
+      "localCheckpoint": "5",
+      "previousCheckpoint": "5",
+      "nextCheckpoint": "7",
+      "scopeVerified": true,
+      "authoritative": true,
+      "expectedAdmit": true
+    },
+    {
+      "activeGeneration": "2",
+      "observedGeneration": "1",
+      "localCheckpoint": "5",
+      "previousCheckpoint": "5",
+      "nextCheckpoint": "7",
+      "scopeVerified": true,
+      "authoritative": true,
+      "expectedAdmit": false
+    },
+    {
+      "activeGeneration": "2",
+      "observedGeneration": "2",
+      "localCheckpoint": "5",
+      "previousCheckpoint": "5",
+      "nextCheckpoint": "7",
+      "scopeVerified": false,
+      "authoritative": true,
+      "expectedAdmit": false
+    },
+    {
+      "activeGeneration": "2",
+      "observedGeneration": "2",
+      "localCheckpoint": "5",
+      "previousCheckpoint": "5",
+      "nextCheckpoint": "5",
+      "scopeVerified": true,
+      "authoritative": true,
+      "expectedAdmit": false
+    },
+    {
+      "activeGeneration": "2",
+      "observedGeneration": "2",
+      "localCheckpoint": "5",
+      "previousCheckpoint": "5",
+      "nextCheckpoint": "7",
+      "scopeVerified": true,
+      "authoritative": false,
+      "expectedAdmit": false
+    }
+  ]
+}
